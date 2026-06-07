@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   Theme tokens — semantic colors as RGB channels, consumed by tailwind.config.js
+   "Asphalt & hi-vis": dark slate surfaces with a safety-amber accent + teal.
+   ========================================================================== */
+:root {
+  --bg: 247 248 250;
+  --surface: 255 255 255;
+  --surface-2: 241 245 249;
+  --border: 226 232 240;
+  --muted: 100 116 139;
+  --text: 15 23 42;
+  --accent: 202 138 4;
+  --accent-soft: 234 179 8;
+  --teal: 13 148 136;
+  --ok: 22 163 74;
+  --warn: 202 138 4;
+  --danger: 220 38 38;
+}
+
+.dark {
+  --bg: 11 18 32;
+  --surface: 17 25 41;
+  --surface-2: 24 34 54;
+  --border: 39 51 74;
+  --muted: 148 163 184;
+  --text: 226 232 240;
+  --accent: 245 184 0;
+  --accent-soft: 250 204 21;
+  --teal: 45 212 191;
+  --ok: 34 197 94;
+  --warn: 234 179 8;
+  --danger: 248 113 113;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-text font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+  ::selection {
+    @apply bg-accent/30;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background-color: rgb(var(--border));
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border bg-surface shadow-card;
+  }
+  .card-pad {
+    @apply p-5 sm:p-6;
+  }
+  .section-title {
+    @apply text-sm font-semibold uppercase tracking-wide text-muted;
+  }
+  .label {
+    @apply block text-xs font-medium text-muted mb-1.5;
+  }
+  .input {
+    @apply w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text
+      outline-none transition placeholder:text-muted/60
+      focus:border-accent focus:ring-2 focus:ring-accent/30;
+  }
+  .select {
+    @apply input appearance-none pr-9 bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0.6rem center;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+      transition active:scale-[.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-slate-950 shadow-sm hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn border border-border bg-surface text-text hover:bg-surface-2;
+  }
+  .btn-quiet {
+    @apply btn text-muted hover:bg-surface-2 hover:text-text;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .badge-ok {
+    @apply badge bg-ok/15 text-ok;
+  }
+  .badge-warn {
+    @apply badge bg-warn/15 text-warn;
+  }
+  .badge-danger {
+    @apply badge bg-danger/15 text-danger;
+  }
+  .badge-muted {
+    @apply badge bg-surface-2 text-muted;
+  }
+  .stat {
+    @apply rounded-xl border border-border bg-surface-2 px-4 py-3;
+  }
+  .stat-label {
+    @apply text-[11px] uppercase tracking-wide text-muted;
+  }
+  .stat-value {
+    @apply font-mono text-lg font-semibold text-text;
+  }
+  .table-cell {
+    @apply px-3 py-2 text-sm;
+  }
+}
