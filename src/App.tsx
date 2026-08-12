@@ -12,7 +12,7 @@ import AboutPage from '@/pages/About'
 
 export default function App() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<ProjectPage />} />
