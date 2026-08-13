@@ -1,15 +1,37 @@
+import { useState } from 'react'
 import { useProject } from '@/store/project'
 import { useAllResults } from '@/store/results'
 import { Section, Stat, StatGrid, Button } from '@/components/ui'
 import { ResultView } from '@/components/ResultView'
 import { ComparisonBarChart } from '@/components/charts'
-import { exportProjectPDF } from '@/lib/export/pdf'
-import { exportProjectXLSX } from '@/lib/export/xlsx'
 import { FileDown, FileSpreadsheet, Download } from 'lucide-react'
 
 export default function ResultsPage() {
   const meta = useProject((s) => s.meta)
   const R = useAllResults()
+  const [busy, setBusy] = useState<'pdf' | 'xlsx' | null>(null)
+
+  // jsPDF, xlsx and html2canvas are ~600 kB and only needed once someone
+  // exports, so they load on demand instead of in the initial bundle.
+  async function exportPDF() {
+    setBusy('pdf')
+    try {
+      const { exportProjectPDF } = await import('@/lib/export/pdf')
+      exportProjectPDF({ meta, overview: R.overview, results: R.all })
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function exportXLSX() {
+    setBusy('xlsx')
+    try {
+      const { exportProjectXLSX } = await import('@/lib/export/xlsx')
+      exportProjectXLSX({ meta, overview: R.overview, results: R.all })
+    } finally {
+      setBusy(null)
+    }
+  }
 
   const comparison = R.flexible
     .filter((x) => x.result.totalThickness > 0)
@@ -23,11 +45,11 @@ export default function ResultsPage() {
           <p className="mt-1 text-sm text-muted">All designs side by side. Export a report or spreadsheet.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => exportProjectPDF({ meta, overview: R.overview, results: R.all })}>
-            <FileDown size={16} /> Export PDF
+          <Button onClick={exportPDF}>
+            <FileDown size={16} /> {busy === 'pdf' ? 'Preparing…' : 'Export PDF'}
           </Button>
-          <Button variant="ghost" onClick={() => exportProjectXLSX({ meta, overview: R.overview, results: R.all })}>
-            <FileSpreadsheet size={16} /> Export Excel
+          <Button variant="ghost" onClick={exportXLSX}>
+            <FileSpreadsheet size={16} /> {busy === 'xlsx' ? 'Preparing…' : 'Export Excel'}
           </Button>
         </div>
       </div>
