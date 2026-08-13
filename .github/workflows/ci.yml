@@ -1,0 +1,45 @@
+name: CI
+
+# Guards dependency bumps: Dependabot opens PRs here, and without this nothing
+# verified that the tree still installs, typechecks, tests and builds. A vite 8
+# bump once left the tree unresolvable, so `npm install` failed and the build
+# silently reused stale node_modules with an old, vulnerable jspdf.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Strict lockfile install. This is the step that catches an incompatible
+      # bump: it errors instead of quietly falling back to whatever is on disk.
+      # Note xlsx resolves to a SheetJS CDN tarball, not the npm registry.
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
